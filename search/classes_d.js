@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['radiocoexmetrics_1023',['RadioCoexMetrics',['../d5/d2d/structotbr_1_1DBus_1_1RadioCoexMetrics.html',1,'otbr::DBus']]],
-  ['radiospinelmetrics_1024',['RadioSpinelMetrics',['../dd/d09/structotbr_1_1DBus_1_1RadioSpinelMetrics.html',1,'otbr::DBus']]],
+  ['radiocoexmetrics_1022',['RadioCoexMetrics',['../d5/d2d/structotbr_1_1DBus_1_1RadioCoexMetrics.html',1,'otbr::DBus']]],
+  ['radiospinelmetrics_1023',['RadioSpinelMetrics',['../dd/d09/structotbr_1_1DBus_1_1RadioSpinelMetrics.html',1,'otbr::DBus']]],
+  ['rcphost_1024',['RcpHost',['../dd/d09/classotbr_1_1Ncp_1_1RcpHost.html',1,'otbr::Ncp']]],
   ['rcpinterfacemetrics_1025',['RcpInterfaceMetrics',['../dc/d2a/structotbr_1_1DBus_1_1RcpInterfaceMetrics.html',1,'otbr::DBus']]],
   ['registration_1026',['Registration',['../da/d01/structotbr_1_1DBus_1_1SrpServerInfo_1_1Registration.html',1,'otbr::DBus::SrpServerInfo::Registration'],['../d3/dcf/classotbr_1_1Mdns_1_1Publisher_1_1Registration.html',1,'otbr::Mdns::Publisher::Registration']]],
   ['request_1027',['Request',['../da/df0/classotbr_1_1rest_1_1Request.html',1,'otbr::rest']]],
