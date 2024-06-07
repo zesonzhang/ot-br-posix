@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">openthread-br
-   &#160;<span id="projectnumber">0.3.0-78fa14b</span>
+   &#160;<span id="projectnumber">0.3.0-e5890cc</span>
    </div>
   </td>
  </tr>
@@ -83,7 +83,8 @@ Inheritance diagram for otbr::Ncp::RcpHost:</div>
  <div class="center">
   <img src="../../dd/d09/classotbr_1_1Ncp_1_1RcpHost.png" usemap="#otbr::Ncp::RcpHost_map" alt=""/>
   <map id="otbr::Ncp::RcpHost_map" name="otbr::Ncp::RcpHost_map">
-<area href="../../db/d03/classotbr_1_1MainloopProcessor.html" alt="otbr::MainloopProcessor" shape="rect" coords="0,0,150,24"/>
+<area href="../../db/d03/classotbr_1_1MainloopProcessor.html" alt="otbr::MainloopProcessor" shape="rect" coords="0,0,165,24"/>
+<area href="../../de/d53/classotbr_1_1Ncp_1_1ThreadController.html" alt="otbr::Ncp::ThreadController" shape="rect" coords="175,0,340,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -92,6 +93,10 @@ Public Types</h2></td></tr>
 <tr class="memitem:a6758d55fc9e91f0ec4743531357997d6"><td class="memItemLeft" align="right" valign="top"><a id="a6758d55fc9e91f0ec4743531357997d6"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadStateChangedCallback</b> = std::function&lt; void(otChangedFlags aFlags)&gt;</td></tr>
 <tr class="separator:a6758d55fc9e91f0ec4743531357997d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_classotbr_1_1Ncp_1_1ThreadController"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classotbr_1_1Ncp_1_1ThreadController')"><img src="../../closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="../../de/d53/classotbr_1_1Ncp_1_1ThreadController.html">otbr::Ncp::ThreadController</a></td></tr>
+<tr class="memitem:a5ac0d4235d99c01d49696c2c0a5ef47d inherit pub_types_classotbr_1_1Ncp_1_1ThreadController"><td class="memItemLeft" align="right" valign="top"><a id="a5ac0d4235d99c01d49696c2c0a5ef47d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DeviceRoleHandler</b> = std::function&lt; void(otError, otDeviceRole)&gt;</td></tr>
+<tr class="separator:a5ac0d4235d99c01d49696c2c0a5ef47d inherit pub_types_classotbr_1_1Ncp_1_1ThreadController"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -119,6 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac5d421f0b97b65032e56924a585a5b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67769830c0f69070bef8bd9129ac6cfa"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d09/classotbr_1_1Ncp_1_1RcpHost.html#a67769830c0f69070bef8bd9129ac6cfa">GetInterfaceName</a> (void) const</td></tr>
 <tr class="separator:a67769830c0f69070bef8bd9129ac6cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add576346e709a4c56abb4f65075ca81c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d09/classotbr_1_1Ncp_1_1RcpHost.html#add576346e709a4c56abb4f65075ca81c">GetDeviceRole</a> (const DeviceRoleHandler aHandler) override</td></tr>
+<tr class="separator:add576346e709a4c56abb4f65075ca81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -230,6 +237,41 @@ static <a class="el" href="../../d0/da9/logging_8hpp.html#ada87d1da6f6926eb3d881
       </table>
 </div><div class="memdoc">
 <p>This method deinitialize the NCP controller. </p>
+
+</div>
+</div>
+<a id="add576346e709a4c56abb4f65075ca81c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add576346e709a4c56abb4f65075ca81c">&#9670;&nbsp;</a></span>GetDeviceRole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void otbr::Ncp::RcpHost::GetDeviceRole </td>
+          <td>(</td>
+          <td class="paramtype">const DeviceRoleHandler&#160;</td>
+          <td class="paramname"><em>aHandler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This method gets the device role and returns the role through the handler.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">aHandler</td><td>A handler to return the role. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="../../de/d53/classotbr_1_1Ncp_1_1ThreadController.html#a7b9fa3a8a4650edbe04a16238efafa0c">otbr::Ncp::ThreadController</a>.</p>
 
 </div>
 </div>
