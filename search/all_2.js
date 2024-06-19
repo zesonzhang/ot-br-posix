@@ -25,11 +25,11 @@ var searchData=
   ['convertopenthreaduint64_56',['ConvertOpenThreadUint64',['../da/d7b/code__utils_8hpp.html#a2fc8a3743601b080355bfbaad9760b9d',1,'code_utils.cpp']]],
   ['converttodbuserrorname_57',['ConvertToDBusErrorName',['../df/de9/namespaceotbr_1_1DBus.html#a58c42079fc5b54e90b4246dbbd93a221',1,'otbr::DBus']]],
   ['copyfrom_58',['CopyFrom',['../d2/dfe/classotbr_1_1Ip6Address.html#a2b0c6e5c8b3ddfaf19d086241a89acd3',1,'otbr::Ip6Address::CopyFrom(const struct sockaddr_in6 &amp;aSockAddr)'],['../d2/dfe/classotbr_1_1Ip6Address.html#aeb7c2b8de4f8a1a15efd0acf0d18ca9c',1,'otbr::Ip6Address::CopyFrom(const struct in6_addr &amp;aIn6Addr)']]],
-  ['copyto_59',['CopyTo',['../d2/dfe/classotbr_1_1Ip6Address.html#af17eb7c1fd8a9c5d54434fbd84c3f173',1,'otbr::Ip6Address::CopyTo(struct sockaddr_in6 &amp;aSockAddr) const'],['../d2/dfe/classotbr_1_1Ip6Address.html#a2edfb162437d6a4c48edd09120193cee',1,'otbr::Ip6Address::CopyTo(struct in6_addr &amp;aIn6Addr) const']]],
+  ['copyto_59',['CopyTo',['../d2/dfe/classotbr_1_1Ip6Address.html#a2edfb162437d6a4c48edd09120193cee',1,'otbr::Ip6Address::CopyTo(struct in6_addr &amp;aIn6Addr) const'],['../d2/dfe/classotbr_1_1Ip6Address.html#af17eb7c1fd8a9c5d54434fbd84c3f173',1,'otbr::Ip6Address::CopyTo(struct sockaddr_in6 &amp;aSockAddr) const']]],
   ['core_2dsecurity_60',['Core-security',['../dd/dcf/group__core-security.html',1,'']]],
   ['crc16_61',['Crc16',['../d6/d8f/classotbr_1_1Crc16.html#a5660386f9d83d77b3376d4dc4360a48d',1,'otbr::Crc16::Crc16()'],['../d6/d8f/classotbr_1_1Crc16.html',1,'otbr::Crc16']]],
   ['crc16_2ecpp_62',['crc16.cpp',['../d7/dd9/crc16_8cpp.html',1,'']]],
   ['crc16_2ehpp_63',['crc16.hpp',['../d4/d31/crc16_8hpp.html',1,'']]],
-  ['create_64',['Create',['../da/ddc/classotbr_1_1Mdns_1_1Publisher.html#a2dbb88b5800232156357286996e9f163',1,'otbr::Mdns::Publisher']]],
+  ['create_64',['Create',['../db/d04/classotbr_1_1Ncp_1_1ThreadHost.html#a4ecc9e39fb16da42b9b809f2ce5fd4fe',1,'otbr::Ncp::ThreadHost::Create()'],['../da/ddc/classotbr_1_1Mdns_1_1Publisher.html#a2dbb88b5800232156357286996e9f163',1,'otbr::Mdns::Publisher::Create()']]],
   ['cstring2jsonstring_65',['CString2JsonString',['../d0/d6c/namespaceotbr_1_1rest_1_1Json.html#a720cab2892abff5045282cf7bcc9592a',1,'otbr::rest::Json']]]
 ];
