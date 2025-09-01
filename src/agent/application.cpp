@@ -443,14 +443,14 @@ DBus::DependentComponents Application::MakeDBusDependentComponents(void)
     };
 }
 
-void Application::EmitTelemetryData(void)
+void Application::TriggerTelemetryPropertyChanged(void)
 {
     DBus::DBusThreadObjectRcp *dbusThreadObject =
         static_cast<DBus::DBusThreadObjectRcp *>(GetDBusAgent().GetThreadObject());
 
     if (dbusThreadObject != nullptr)
     {
-        dbusThreadObject->EmitTelemetryData();
+        dbusThreadObject->TriggerTelemetryPropertyChanged();
     }
 }
 
@@ -460,7 +460,7 @@ void Application::HandleTelemetry(void)
 
     if (std::chrono::duration_cast<std::chrono::seconds>(now - mLastTelemetryPushTime).count() >= 120)
     {
-        EmitTelemetryData();
+        TriggerTelemetryPropertyChanged();
         mLastTelemetryPushTime = now;
     }
 }

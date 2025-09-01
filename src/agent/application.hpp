@@ -234,7 +234,7 @@ public:
 private:
     using Clock = std::chrono::steady_clock;
 
-    void EmitTelemetryData(void);
+    void TriggerTelemetryPropertyChanged(void);
     void HandleTelemetry(void);
 
     // Default poll timeout.

@@ -330,7 +330,7 @@ void DBusThreadObjectRcp::DeviceRoleHandler(otDeviceRole aDeviceRole)
 {
     SignalPropertyChanged(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_PROPERTY_DEVICE_ROLE, GetDeviceRoleName(aDeviceRole));
 #if OTBR_ENABLE_TELEMETRY_DATA_API
-    EmitTelemetryData();
+    TriggerTelemetryPropertyChanged();
 #endif
 }
 
@@ -340,7 +340,7 @@ void DBusThreadObjectRcp::Dhcp6PdStateHandler(otBorderRoutingDhcp6PdState aDhcp6
     SignalPropertyChanged(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_PROPERTY_DHCP6_PD_STATE,
                           GetDhcp6PdStateName(aDhcp6PdState));
 #if OTBR_ENABLE_TELEMETRY_DATA_API
-    EmitTelemetryData();
+    TriggerTelemetryPropertyChanged();
 #endif
 }
 #endif
@@ -1796,7 +1796,7 @@ void DBusThreadObjectRcp::ActiveDatasetChangeHandler(const otOperationalDatasetT
     std::copy(aDatasetTlvs.mTlvs, aDatasetTlvs.mTlvs + aDatasetTlvs.mLength, value.begin());
     SignalPropertyChanged(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_PROPERTY_ACTIVE_DATASET_TLVS, value);
 #if OTBR_ENABLE_TELEMETRY_DATA_API
-    EmitTelemetryData();
+    TriggerTelemetryPropertyChanged();
 #endif
 }
 
@@ -2237,9 +2237,10 @@ static_assert(OTBR_SRP_SERVER_ADDRESS_MODE_ANYCAST == static_cast<uint8_t>(OT_SR
               "OTBR_SRP_SERVER_ADDRESS_MODE_ANYCAST value is incorrect");
 
 #if OTBR_ENABLE_TELEMETRY_DATA_API
-void DBusThreadObjectRcp::EmitTelemetryData(void)
+void DBusThreadObjectRcp::TriggerTelemetryPropertyChanged(void)
 {
     threadnetwork::TelemetryData telemetryData;
+    otError                      error = OT_ERROR_NONE;
 
     if (mTelemetryRetriever.RetrieveTelemetryData(mPublisher, telemetryData) != OT_ERROR_NONE)
     {
@@ -2250,7 +2251,12 @@ void DBusThreadObjectRcp::EmitTelemetryData(void)
         const std::string    telemetryDataBytes = telemetryData.SerializeAsString();
         std::vector<uint8_t> data(telemetryDataBytes.begin(), telemetryDataBytes.end());
 
-        Signal(OTBR_DBUS_THREAD_INTERFACE, "TelemetryDataPushed", std::tie(data));
+        SuccessOrExit(error = SignalPropertyChanged(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_PROPERTY_TELEMETRY_DATA, data));
+    }
+exit:
+    if (error != OT_ERROR_NONE)
+    {
+        otbrLogWarning("Failed to signal TelemetryData property changed: %s", otbrErrorToString(error));
     }
 }
 #endif
