@@ -71,6 +71,8 @@ public:
     void Update(MainloopContext &aMainloop) override;
     void Process(const MainloopContext &aMainloop) override;
 
+    DBusObject *GetThreadObject(void) { return mThreadObject.get(); }
+
 private:
     using Clock                                              = std::chrono::steady_clock;
     constexpr static std::chrono::seconds kDBusWaitAllowance = std::chrono::seconds(30);

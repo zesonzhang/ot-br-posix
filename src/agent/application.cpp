@@ -92,6 +92,7 @@ Application::Application(Host::ThreadHost  &aHost,
 void Application::Init(const std::string &aRestListenAddress, int aRestListenPort)
 {
     mHost.Init();
+    mLastTelemetryPushTime = Clock::now();
 
     switch (mHost.GetCoprocessorType())
     {
@@ -184,6 +185,9 @@ otbrError Application::Run(void)
         {
             MainloopManager::GetInstance().Process(mainloop);
 
+#if OTBR_ENABLE_DBUS_SERVER
+            HandleTelemetry();
+#endif
             if (mErrorCondition)
             {
                 error = mErrorCondition();
@@ -438,6 +442,29 @@ DBus::DependentComponents Application::MakeDBusDependentComponents(void)
 #endif
     };
 }
+
+void Application::EmitTelemetryData(void)
+{
+    DBus::DBusThreadObjectRcp *dbusThreadObject =
+        static_cast<DBus::DBusThreadObjectRcp *>(GetDBusAgent().GetThreadObject());
+
+    if (dbusThreadObject != nullptr)
+    {
+        dbusThreadObject->EmitTelemetryData();
+    }
+}
+
+void Application::HandleTelemetry(void)
+{
+    Clock::time_point now = Clock::now();
+
+    if (std::chrono::duration_cast<std::chrono::seconds>(now - mLastTelemetryPushTime).count() >= 120)
+    {
+        EmitTelemetryData();
+        mLastTelemetryPushTime = now;
+    }
+}
+
 #endif
 
 } // namespace otbr

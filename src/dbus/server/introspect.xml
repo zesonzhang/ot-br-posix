@@ -1006,6 +1006,14 @@
     <signal name="Ready">
     </signal>
 
+    <!-- TelemetryDataPushed: The signal is sent when telemetry data is pushed.
+      @data: The Thread telemetry data (defined as proto/thread_telemetry.proto)
+             in binary form.
+    -->
+    <signal name="TelemetryDataPushed">
+      <arg name="data" type="ay"/>
+    </signal>
+
   </interface>
 
   <interface name="org.freedesktop.DBus.Properties">

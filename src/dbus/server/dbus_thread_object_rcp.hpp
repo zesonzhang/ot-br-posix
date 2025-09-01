@@ -77,6 +77,7 @@ public:
     void RegisterGetPropertyHandler(const std::string         &aInterfaceName,
                                     const std::string         &aPropertyName,
                                     const PropertyHandlerType &aHandler) override;
+    void EmitTelemetryData(void);
 
 private:
     void DeviceRoleHandler(otDeviceRole aDeviceRole);

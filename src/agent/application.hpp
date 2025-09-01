@@ -37,6 +37,7 @@
 #include "openthread-br/config.h"
 
 #include <atomic>
+#include <chrono>
 #include <signal.h>
 #include <stdint.h>
 #include <vector>
@@ -231,6 +232,11 @@ public:
 #endif
 
 private:
+    using Clock = std::chrono::steady_clock;
+
+    void EmitTelemetryData(void);
+    void HandleTelemetry(void);
+
     // Default poll timeout.
     static const struct timeval kPollTimeout;
 
@@ -296,6 +302,7 @@ private:
 
     static std::atomic_bool sShouldTerminate;
     ErrorCondition          mErrorCondition;
+    Clock::time_point       mLastTelemetryPushTime;
 };
 
 /**
