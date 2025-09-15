@@ -348,6 +348,17 @@ public:
     ClientError SetNat64Enabled(bool aEnabled);
 
     /**
+     * This method enables/disables the Border Agent.
+     *
+     * @param[in] aEnabled  Whether to enable the Border Agent.
+     *
+     * @retval ERROR_NONE  Successfully performed the dbus function call
+     * @retval ERROR_DBUS  dbus encode/decode error
+     * @retval ...         OpenThread defined error value otherwise
+     */
+    ClientError SetBorderAgentEnabled(bool aEnabled);
+
+    /**
      * This method sets the Ephemeral Key switch.
      *
      * @param[in] aEnabled  A boolean to enable/disable the Ephemeral Key.

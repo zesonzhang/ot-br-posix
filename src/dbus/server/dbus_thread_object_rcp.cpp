@@ -161,6 +161,8 @@ otbrError DBusThreadObjectRcp::Init(void)
 #if OTBR_ENABLE_BORDER_AGENT
     RegisterMethod(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_UPDATE_VENDOR_MESHCOP_TXT_METHOD,
                    std::bind(&DBusThreadObjectRcp::UpdateMeshCopTxtHandler, this, _1));
+    RegisterMethod(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_SET_BORDER_AGENT_ENABLED_METHOD,
+                   std::bind(&DBusThreadObjectRcp::SetBorderAgentEnabledHandler, this, _1));
 #endif
     RegisterMethod(OTBR_DBUS_THREAD_INTERFACE, OTBR_DBUS_GET_PROPERTIES_METHOD,
                    std::bind(&DBusThreadObjectRcp::GetPropertiesHandler, this, _1));
@@ -1332,6 +1334,19 @@ void DBusThreadObjectRcp::UpdateMeshCopTxtHandler(DBusRequest &aRequest)
         VerifyOrExit(!update.count(reservedKey), error = OT_ERROR_INVALID_ARGS);
     }
     mBorderAgent.UpdateVendorMeshCoPTxtEntries(update);
+
+exit:
+    aRequest.ReplyOtResult(error);
+}
+
+void DBusThreadObjectRcp::SetBorderAgentEnabledHandler(DBusRequest &aRequest)
+{
+    otError error  = OT_ERROR_NONE;
+    bool    enable = false;
+    auto    args   = std::tie(enable);
+
+    VerifyOrExit(DBusMessageToTuple(*aRequest.GetMessage(), args) == OTBR_ERROR_NONE, error = OT_ERROR_INVALID_ARGS);
+    mBorderAgent.SetEnabled(enable);
 
 exit:
     aRequest.ReplyOtResult(error);

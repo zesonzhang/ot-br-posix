@@ -463,6 +463,11 @@ ClientError ThreadApiDBus::SetNat64Enabled(bool aEnabled)
     return CallDBusMethodSync(OTBR_DBUS_SET_NAT64_ENABLED_METHOD, std::tie(aEnabled));
 }
 
+ClientError ThreadApiDBus::SetBorderAgentEnabled(bool aEnabled)
+{
+    return CallDBusMethodSync(OTBR_DBUS_SET_BORDER_AGENT_ENABLED_METHOD, std::tie(aEnabled));
+}
+
 ClientError ThreadApiDBus::SetEphemeralKeyEnabled(bool aEnabled)
 {
     return SetProperty(OTBR_DBUS_PROPERTY_EPHEMERAL_KEY_ENABLED, aEnabled);

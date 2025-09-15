@@ -216,6 +216,13 @@
       <arg name="update" type="a(say)" direction="in"/>
     </method>
 
+    <!-- SetBorderAgentEnabled: Enable/disable the border agent service.
+      @enable: true to enable, false to disable.
+    -->
+    <method name="SetBorderAgentEnabled">
+      <arg name="enable" type="b" direction="in"/>
+    </method>
+
     <!-- GetProperties: Get one or more OpenThread properties.
       @properties: Names of properties.
     -->
