@@ -39,6 +39,7 @@ include(GoogleTest)
 
 add_executable(otbr-gtest-unit
     test_async_task.cpp
+    test_border_agent.cpp
     test_common_types.cpp
     test_dns_utils.cpp
     test_logging.cpp
@@ -48,6 +49,7 @@ add_executable(otbr-gtest-unit
 )
 target_link_libraries(otbr-gtest-unit
     mbedtls
+    otbr-agent
     otbr-common
     otbr-host
     otbr-utils
