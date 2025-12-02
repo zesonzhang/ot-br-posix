@@ -526,7 +526,7 @@ void ThreadHelper::AttachAllNodesTo(const std::vector<uint8_t> &aDatasetTlvs, At
 
     otError                  error = OT_ERROR_NONE;
     otOperationalDatasetTlvs datasetTlvs;
-    otOperationalDataset     dataset;
+    otOperationalDataset     dataset{};
     otOperationalDataset     emptyDataset{};
     otDeviceRole             role = mHost->GetDeviceRole();
 
@@ -542,6 +542,33 @@ void ThreadHelper::AttachAllNodesTo(const std::vector<uint8_t> &aDatasetTlvs, At
     datasetTlvs.mLength = aDatasetTlvs.size();
 
     SuccessOrExit(error = otDatasetParseTlvs(&datasetTlvs, &dataset));
+
+    if (dataset.mComponents.mIsActiveTimestampPresent && dataset.mComponents.mIsExtendedPanIdPresent)
+    {
+        otOperationalDataset currentActiveDataset;
+
+        if (otDatasetGetActive(mInstance, &currentActiveDataset) == OT_ERROR_NONE)
+        {
+            if (currentActiveDataset.mActiveTimestamp.mSeconds == dataset.mActiveTimestamp.mSeconds &&
+                currentActiveDataset.mActiveTimestamp.mTicks == dataset.mActiveTimestamp.mTicks &&
+                currentActiveDataset.mActiveTimestamp.mAuthoritative == dataset.mActiveTimestamp.mAuthoritative &&
+                memcmp(currentActiveDataset.mExtendedPanId.m8, dataset.mExtendedPanId.m8,
+                       sizeof(currentActiveDataset.mExtendedPanId.m8)) == 0)
+            {
+                if (role == OT_DEVICE_ROLE_DISABLED || role == OT_DEVICE_ROLE_DETACHED)
+                {
+                    if (!otIp6IsEnabled(mInstance))
+                    {
+                        SuccessOrExit(error = otIp6SetEnabled(mInstance, true));
+                    }
+                    SuccessOrExit(error = otThreadSetEnabled(mInstance, true));
+                }
+                aHandler(OT_ERROR_NONE, 0);
+                ExitNow(error = OT_ERROR_NONE);
+            }
+        }
+    }
+
     VerifyOrExit(dataset.mComponents.mIsActiveTimestampPresent, error = OT_ERROR_INVALID_ARGS);
     VerifyOrExit(dataset.mComponents.mIsNetworkKeyPresent, error = OT_ERROR_INVALID_ARGS);
     VerifyOrExit(dataset.mComponents.mIsNetworkNamePresent, error = OT_ERROR_INVALID_ARGS);
