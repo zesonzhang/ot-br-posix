@@ -75,6 +75,7 @@ private:
 #if OTBR_ENABLE_DHCP6_PD
     void RetrievePdInfo(threadnetwork::TelemetryData::WpanBorderRouter *aWpanBorderRouter);
     void RetrieveHashedPdPrefix(std::string *aHashedPdPrefix);
+    void ComputeHashedPdPrefix(const uint8_t *aPrefixAddr, std::string *aHashedPdPrefix);
     void RetrievePdProcessedRaInfo(threadnetwork::TelemetryData::PdProcessedRaInfo *aPdProcessedRaInfo);
 #endif
 #if OTBR_ENABLE_BORDER_AGENT
