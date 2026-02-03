@@ -637,7 +637,7 @@ message TelemetryData {
     optional bytes hashed_pd_prefix = 9;
 
     // DHCPv6 PD processed RA Info
-    optional PdProcessedRaInfo pd_processed_ra_info= 10;
+    optional PdProcessedRaInfo pd_processed_ra_info = 10;
 
     // Information about TREL.
     optional TrelInfo trel_info = 11;
