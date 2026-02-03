@@ -589,16 +589,15 @@ message TelemetryData {
   }
 
   message BorderAgentEpskcJourneyInfo {
-
-      // The timestamp of different events during the ePSKc journey.
-      optional uint32 activated_msec = 1;
-      optional uint32 connected_msec = 2;
-      optional uint32 petitioned_msec = 3;
-      optional uint32 retrieved_active_dataset_msec = 4;
-      optional uint32 retrieved_pending_dataset_msec = 5;
-      optional uint32 keep_alive_msec = 6;
-      optional uint32 deactivated_msec = 7;
-      optional EpskcDeactivatedReason deactivated_reason = 8;
+    // The timestamp of different events during the ePSKc journey.
+    optional uint32 activated_msec = 1;
+    optional uint32 connected_msec = 2;
+    optional uint32 petitioned_msec = 3;
+    optional uint32 retrieved_active_dataset_msec = 4;
+    optional uint32 retrieved_pending_dataset_msec = 5;
+    optional uint32 keep_alive_msec = 6;
+    optional uint32 deactivated_msec = 7;
+    optional EpskcDeactivatedReason deactivated_reason = 8;
   }
 
   message BorderAgentInfo {
