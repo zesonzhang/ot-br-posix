@@ -25,10 +25,12 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+
 syntax = "proto2";
-option optimize_for = LITE_RUNTIME;
 
 package threadnetwork;
+
+option optimize_for = LITE_RUNTIME;
 
 // Thread Telemetry data definition.
 // The field range for your data definition is determined as:
