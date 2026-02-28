@@ -386,6 +386,27 @@ EOF
     ot_ctl dataset active | grep "Active Timestamp: 2"
     ot_ctl networkkey | grep be3bd244ae6d997020a882a24a8040e2
 
+    # Test AttachAllNodesTo with the same dataset.
+    # The device is already leader, calling AttachAllNodesTo with same dataset should succeed immediately (0 delay).
+    sudo dbus-send --system --dest=io.openthread.BorderRouter.wpan0 \
+        --type=method_call --print-reply /io/openthread/BorderRouter/wpan0 \
+        io.openthread.BorderRouter.AttachAllNodesTo \
+        "array:byte:${dataset}" \
+        | grep "int64 0"
+    ot_ctl state | grep "leader"
+
+    # Test AttachAllNodesTo with the same dataset when device is disabled.
+    ot_ctl thread stop
+    ot_ctl state | grep "disabled"
+    sudo dbus-send --system --dest=io.openthread.BorderRouter.wpan0 \
+        --type=method_call --print-reply /io/openthread/BorderRouter/wpan0 \
+        io.openthread.BorderRouter.AttachAllNodesTo \
+        "array:byte:${dataset}" \
+        | grep "int64 0"
+    # Wait for thread to start (it might take a moment to become leader/router, but it should be enabled)
+    sleep 2
+    ot_ctl state | grep -E "leader|router|child"
+
     ot_ctl dataset init new
     ot_ctl dataset commit pending
 
