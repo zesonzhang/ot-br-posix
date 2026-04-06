@@ -1,0 +1,177 @@
+#!/bin/bash
+#
+#  Copyright (c) 2024, The OpenThread Authors.
+#  All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are met:
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. Neither the name of the copyright holder nor the
+#     names of its contributors may be used to endorse or promote products
+#     derived from this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+#  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+#  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+#  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+#  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#  POSSIBILITY OF SUCH DAMAGE.
+#
+# Test AttachAllNodesTo with same dataset
+#
+
+set -euxo pipefail
+
+OTBR_DBUS_SERVER_CONF=otbr-test-agent.conf
+readonly OTBR_DBUS_SERVER_CONF
+
+on_exit()
+{
+    local status=$?
+
+    sudo systemctl stop test-otbr-agent || true
+    sudo killall dbus-monitor || true
+    sudo rm "/etc/dbus-1/system.d/${OTBR_DBUS_SERVER_CONF}" || true
+
+    return "${status}"
+}
+
+ot_ctl()
+{
+    sudo "${CMAKE_BINARY_DIR}"/third_party/openthread/repo/src/posix/ot-ctl "$@"
+}
+
+otbr_factoryreset()
+{
+    ot_ctl factoryreset
+    timeout 2 bash -c "while ! ot_ctl state; do sleep 1; done"
+}
+
+otbr_agent_service_start()
+{
+    local -r EXIT_CODE_SHOULD_RESTART=7
+
+    sudo systemd-run --collect --no-ask-password -u test-otbr-agent -p "RestartForceExitStatus=$EXIT_CODE_SHOULD_RESTART" "${CMAKE_BINARY_DIR}"/src/agent/otbr-agent -d7 -I wpan0 -B eth0 "spinel+hdlc+forkpty://$(command -v ot-rcp)?forkpty-arg=1"
+    timeout 2 bash -c "while ! ot_ctl state; do sleep 1; done"
+}
+
+suite_setup()
+{
+    TEST_HELLO="$(basename "$0") started at $(date +%s)"
+    logger "$TEST_HELLO"
+    [[ -f /etc/dbus-1/system.d/"${OTBR_DBUS_SERVER_CONF}" ]] || {
+        local CONFIG_FILE_PATH="third_party/openthread/repo/src/posix/platform"
+        mkdir -p "${PWD}/${CONFIG_FILE_PATH}" && cp "${PROJECT_SOURCE_DIR}/${CONFIG_FILE_PATH}/openthread.conf.example" "${PWD}/${CONFIG_FILE_PATH}"
+
+        sudo rm -rf tmp
+        sudo install -m 644 "${CMAKE_BINARY_DIR}"/src/agent/otbr-agent.conf /etc/dbus-1/system.d/"${OTBR_DBUS_SERVER_CONF}"
+        sudo service dbus reload
+    }
+    trap on_exit EXIT
+
+    export -f ot_ctl
+}
+
+test_ready_signal()
+{
+    sudo expect <<EOF
+spawn dbus-monitor --system path=/io/openthread/BorderRouter/wpan0,member=Ready
+set dbus_monitor \$spawn_id
+spawn ${CMAKE_BINARY_DIR}/src/agent/otbr-agent -d7 -I wpan0 -B eth0 spinel+hdlc+forkpty://$(command -v ot-rcp)?forkpty-arg=1
+set spawn_id \$dbus_monitor
+expect {
+    "member=Ready" { exit }
+    timeout { error "Failed to find Ready signal\n" }
+}
+EOF
+    timeout 2 bash -c "while pidof ot-rcp; do logger -t otbr-test-dbus-client; sleep 1; done"
+}
+
+main()
+{
+    suite_setup
+
+    sudo "${CMAKE_BINARY_DIR}"/src/agent/otbr-agent -d7 -I wpan0 --radio-version "spinel+hdlc+forkpty://$(command -v ot-rcp)?forkpty-arg=1" | grep "OPENTHREAD"
+
+    test_ready_signal
+
+    otbr_agent_service_start
+
+    otbr_factoryreset
+
+    local dataset="0x0e,0x08,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x03,0x00,0x00,0x18,"
+    dataset+="0x35,0x06,0x00,0x04,0x00,0x1f,0xff,0xe0,0x02,0x08,0xef,0x18,0xe6,0xa1,0xf3,0xd6,"
+    dataset+="0x86,0xc4,0x07,0x08,0xfd,0x16,0x72,0x24,0xc2,0x4e,0x16,0x00,0x05,0x10,0xbe,0x3b,"
+    dataset+="0xd2,0x44,0xae,0x6d,0x99,0x70,0x20,0xa8,0x82,0xa2,0x4a,0x80,0x40,0xe2,0x03,0x0f,"
+    dataset+="0x4f,0x70,0x65,0x6e,0x54,0x68,0x72,0x65,0x61,0x64,0x2d,0x30,0x36,0x62,0x37,0x01,"
+    dataset+="0x02,0x06,0xb7,0x04,0x10,0xf9,0xc9,0x1b,0x11,0x45,0x02,0x54,0x67,0xbf,0x11,0xed,"
+    dataset+="0xf9,0x01,0x1a,0x58,0x12,0x0c,0x04,0x02,0xa0,0xff,0xf8"
+
+    # Set active dataset to be the same as the one we will attach to
+    # We use Attach method first to set up the network
+    sudo dbus-send --system --dest=io.openthread.BorderRouter.wpan0 \
+        --type=method_call --print-reply /io/openthread/BorderRouter/wpan0 \
+        io.openthread.BorderRouter.Attach \
+        array:byte: \
+        uint16:0xffff \
+        string:OpenThread \
+        uint64:0xffffffffffffffff \
+        array:byte: \
+        uint32:0xffffffff
+
+    # Manually overwrite the dataset with the one we want to test against,
+    # because Attach() generates random values for some fields.
+    # Actually, let's just use the AttachAllNodesTo with the dataset.
+    # First time we attach to it (migrating from whatever Attach() created).
+    # This might take 300s or 0s depending on current state.
+    # To be deterministic, let's set the active dataset via ot-ctl to be exactly 'dataset'.
+
+    # Convert comma separated hex string to hex string for ot-ctl
+    # dataset var: "0x0e,0x08,..."
+    local dataset_hex=$(echo "$dataset" | sed 's/0x//g' | sed 's/,//g')
+
+    ot_ctl dataset set active "$dataset_hex"
+    ot_ctl ifconfig up
+    ot_ctl thread start
+    sleep 5
+    ot_ctl state
+
+    # Now we are attached to 'dataset'.
+    # Call AttachAllNodesTo with the same 'dataset'.
+    # Expect 0 delay.
+
+    sudo dbus-send --system --dest=io.openthread.BorderRouter.wpan0 \
+        --type=method_call --print-reply /io/openthread/BorderRouter/wpan0 \
+        io.openthread.BorderRouter.AttachAllNodesTo \
+        "array:byte:${dataset}" \
+        | grep "int64 0"
+
+    # Case 2: Thread is disabled/detached
+    ot_ctl thread stop
+    sleep 2
+    ot_ctl state | grep "disabled"
+
+    # Call AttachAllNodesTo with the same 'dataset'.
+    # Expect 0 delay.
+    sudo dbus-send --system --dest=io.openthread.BorderRouter.wpan0 \
+        --type=method_call --print-reply /io/openthread/BorderRouter/wpan0 \
+        io.openthread.BorderRouter.AttachAllNodesTo \
+        "array:byte:${dataset}" \
+        | grep "int64 0"
+
+    # Verify we are attached
+    sleep 5
+    ot_ctl state | grep -E "leader|router|child"
+
+}
+
+main "$@"
