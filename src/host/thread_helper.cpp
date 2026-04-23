@@ -578,6 +578,28 @@ void ThreadHelper::AttachAllNodesTo(const std::vector<uint8_t> &aDatasetTlvs, At
         ExitNow(error = OT_ERROR_NONE);
     }
 
+    {
+        otOperationalDataset activeDataset;
+
+        if (otDatasetGetActive(mInstance, &activeDataset) == OT_ERROR_NONE &&
+            memcmp(dataset.mExtendedPanId.m8, activeDataset.mExtendedPanId.m8, sizeof(dataset.mExtendedPanId)) == 0 &&
+            dataset.mActiveTimestamp.mSeconds == activeDataset.mActiveTimestamp.mSeconds &&
+            dataset.mActiveTimestamp.mTicks == activeDataset.mActiveTimestamp.mTicks &&
+            dataset.mActiveTimestamp.mAuthoritative == activeDataset.mActiveTimestamp.mAuthoritative)
+        {
+            if (role == OT_DEVICE_ROLE_DISABLED || role == OT_DEVICE_ROLE_DETACHED)
+            {
+                if (!otIp6IsEnabled(mInstance))
+                {
+                    SuccessOrExit(error = otIp6SetEnabled(mInstance, true));
+                }
+                SuccessOrExit(error = otThreadSetEnabled(mInstance, true));
+            }
+
+            ExitNow();
+        }
+    }
+
     SuccessOrExit(error = ProcessDatasetForMigration(datasetTlvs, kDelayTimerMilliseconds));
 
     assert(datasetTlvs.mLength > 0);
@@ -624,6 +646,10 @@ exit:
     if (error != OT_ERROR_NONE)
     {
         aHandler(error, 0);
+    }
+    else if (mAttachHandler == nullptr)
+    {
+        aHandler(OT_ERROR_NONE, 0);
     }
 }
 
