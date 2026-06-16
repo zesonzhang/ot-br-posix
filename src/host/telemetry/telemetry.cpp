@@ -917,23 +917,32 @@ void TelemetryRetriever::RetrievePdInfo(threadnetwork::TelemetryData::WpanBorder
 void TelemetryRetriever::RetrieveHashedPdPrefix(std::string *aHashedPdPrefix)
 {
     otBorderRoutingPrefixTableEntry aPrefixInfo;
-    const uint8_t                  *prefixAddr          = nullptr;
-    const uint8_t                  *truncatedHash       = nullptr;
-    constexpr size_t                kHashPrefixLength   = 6;
-    constexpr size_t                kHashedPrefixLength = 2;
-    std::vector<uint8_t>            hashedPdHeader      = {0x20, 0x01, 0x0d, 0xb8};
-    std::vector<uint8_t>            hashedPdTailer      = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    std::vector<uint8_t>            hashedPdPrefix;
-    hashedPdPrefix.reserve(16);
-    Sha256       sha256;
-    Sha256::Hash hash;
+    const uint8_t                  *prefixAddr = nullptr;
 
     SuccessOrExit(otBorderRoutingGetPdOmrPrefix(mInstance, &aPrefixInfo));
     prefixAddr = aPrefixInfo.mPrefix.mPrefix.mFields.m8;
 
-    // TODO: Put below steps into a reusable function.
+    ComputeHashedPdPrefix(prefixAddr, aHashedPdPrefix);
+
+exit:
+    return;
+}
+
+void TelemetryRetriever::ComputeHashedPdPrefix(const uint8_t *aPrefixAddr, std::string *aHashedPdPrefix)
+{
+    const uint8_t        *truncatedHash       = nullptr;
+    constexpr size_t      kHashPrefixLength   = 6;
+    constexpr size_t      kHashedPrefixLength = 2;
+    std::vector<uint8_t>  hashedPdHeader      = {0x20, 0x01, 0x0d, 0xb8};
+    std::vector<uint8_t>  hashedPdTailer      = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    std::vector<uint8_t>  hashedPdPrefix;
+    Sha256                sha256;
+    Sha256::Hash          hash;
+
+    hashedPdPrefix.reserve(16);
+
     sha256.Start();
-    sha256.Update(prefixAddr, kHashPrefixLength);
+    sha256.Update(aPrefixAddr, kHashPrefixLength);
     sha256.Update(mNat64PdCommonSalt, kNat64PdCommonHashSaltLength);
     sha256.Finish(hash);
 
@@ -945,16 +954,13 @@ void TelemetryRetriever::RetrieveHashedPdPrefix(std::string *aHashedPdPrefix)
     hashedPdPrefix.insert(hashedPdPrefix.end(), truncatedHash, truncatedHash + kHashedPrefixLength);
 
     // Append ip[6] and ip[7]
-    hashedPdPrefix.push_back(prefixAddr[6]);
-    hashedPdPrefix.push_back(prefixAddr[7]);
+    hashedPdPrefix.push_back(aPrefixAddr[6]);
+    hashedPdPrefix.push_back(aPrefixAddr[7]);
 
     // Append hashedPdTailer
     hashedPdPrefix.insert(hashedPdPrefix.end(), hashedPdTailer.begin(), hashedPdTailer.end());
 
     aHashedPdPrefix->append(reinterpret_cast<const char *>(hashedPdPrefix.data()), hashedPdPrefix.size());
-
-exit:
-    return;
 }
 
 void TelemetryRetriever::RetrievePdProcessedRaInfo(threadnetwork::TelemetryData::PdProcessedRaInfo *aPdProcessedRaInfo)
