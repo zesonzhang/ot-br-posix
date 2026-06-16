@@ -42,8 +42,37 @@
 #include <string>
 #include <vector>
 
+#include <openthread/dataset.h>
 #include <openthread/error.h>
 #include <openthread/ip6.h>
+
+/**
+ * This method overloads `==` operator for comparing two otOperationalDataset objects.
+ *
+ * @param[in] aLhs  The first otOperationalDataset object.
+ * @param[in] aRhs  The second otOperationalDataset object.
+ *
+ * @returns True if the two objects are equal, false otherwise.
+ */
+inline bool operator==(const otOperationalDataset &aLhs, const otOperationalDataset &aRhs)
+{
+    if (aLhs.mActiveTimestamp.mSeconds != aRhs.mActiveTimestamp.mSeconds)
+    {
+        return false;
+    }
+
+    if (aLhs.mActiveTimestamp.mTicks != aRhs.mActiveTimestamp.mTicks)
+    {
+        return false;
+    }
+
+    if (aLhs.mActiveTimestamp.mAuthoritative != aRhs.mActiveTimestamp.mAuthoritative)
+    {
+        return false;
+    }
+
+    return memcmp(aLhs.mExtendedPanId.m8, aRhs.mExtendedPanId.m8, sizeof(aLhs.mExtendedPanId.m8)) == 0;
+}
 
 #ifndef IN6ADDR_ANY
 /**
